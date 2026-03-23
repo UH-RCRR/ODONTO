@@ -52,7 +52,6 @@ class Usuario {
        LISTAR USUARIOS
     ===================== */
     public function listarUsuarios() {
-
         $sql = "
             SELECT 
                 u.id,
@@ -86,8 +85,9 @@ class Usuario {
             return $docente['id'];
         }
 
-        // Si NO existe, lo creamos con NOMBRE y CORREO
-        $passwordTemporal = password_hash('Docente123', PASSWORD_DEFAULT);
+        // --- CORRECCIÓN AQUÍ ---
+        // Si NO existe, lo creamos con contraseña en TEXTO PLANO
+        $passwordTemporal = 'Docente123'; 
 
         $stmt = $this->db->prepare(
             "INSERT INTO usuarios (nombre, correo, password, rol_id, activo)
@@ -103,19 +103,53 @@ class Usuario {
         return $this->db->lastInsertId();
     }
 
+    public function cambiarEstado($id, $estado) {
+        $stmt = $this->db->prepare(
+            "UPDATE usuarios 
+             SET activo = ? 
+             WHERE id = ?"
+        );
+        return $stmt->execute([$estado, $id]);
+    }
 
-    /* =====================
-   ACTIVAR / DESACTIVAR USUARIO
-===================== */
-public function cambiarEstado($id, $estado) {
 
-    $stmt = $this->db->prepare(
-        "UPDATE usuarios 
-         SET activo = ? 
-         WHERE id = ?"
-    );
+    public function buscarPorId($id) {
+        $sql = "SELECT * FROM usuarios WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute(['id' => $id]);
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
 
-    return $stmt->execute([$estado, $id]);
-}
+    /**
+     * Crea un nuevo usuario (Subadmin, Docente o Alumno)
+     */
+    public function crearUsuario($data) {
+        // Se inserta el password tal cual viene en el array $data
+        $sql = "INSERT INTO usuarios (nombre, correo, matricula, rol_id, password, activo) 
+                VALUES (:nombre, :correo, :matricula, :rol_id, :password, 1)";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            'nombre'    => $data['nombre'],
+            'correo'    => $data['correo'],
+            'matricula' => $data['matricula'] ?? null,
+            'rol_id'    => $data['rol_id'],
+            'password'  => $data['password'] // TEXTO PLANO
+        ]);
+    }
 
+    /**
+     * Actualiza los datos de un usuario existente
+     */
+    public function actualizarUsuario($data) {
+        $sql = "UPDATE usuarios SET nombre = :nombre, correo = :correo, 
+                matricula = :matricula, rol_id = :rol_id WHERE id = :id";
+        $stmt = $this->db->prepare($sql);
+        return $stmt->execute([
+            'nombre'    => $data['nombre'],
+            'correo'    => $data['correo'],
+            'matricula' => $data['matricula'],
+            'rol_id'    => $data['rol_id'],
+            'id'        => $data['id']
+        ]);
+    }
 }

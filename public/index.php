@@ -1,11 +1,10 @@
 <?php
 
-$c = $_GET['c'] ?? 'login';
+$c = strtolower($_GET['c'] ?? 'login');
 $a = $_GET['a'] ?? null;
 
 switch ($c) {
 
-    /* ===================== AUTH ===================== */
     case 'auth':
         require_once '../app/controllers/AuthController.php';
         $controller = new AuthController();
@@ -17,100 +16,85 @@ switch ($c) {
         }
         break;
 
-    /* ===================== ADMIN ===================== */
     case 'admin':
         require_once '../app/controllers/AdminController.php';
         (new AdminController())->dashboard();
         break;
 
-    /* ===================== DASHBOARD ===================== */
+    // --- AGREGAMOS ESTE NUEVO CASO ---
+    case 'subadmin':
+        require_once '../app/controllers/SubadminController.php';
+        $controller = new SubadminController();
+        // Si no hay acción (a), por defecto va al dashboard
+        $accion = $a ?? 'dashboard'; 
+        if (method_exists($controller, $accion)) {
+            $controller->$accion();
+        } else {
+            $controller->dashboard();
+        }
+        break;
+
     case 'dashboard':
         require_once '../app/controllers/DashboardController.php';
         (new DashboardController())->index();
         break;
 
-    /* ===================== USUARIOS ===================== */
     case 'usuarios':
         require_once '../app/controllers/UsuariosController.php';
         $controller = new UsuariosController();
 
-        if ($a === 'cambiarEstado') {
-            $controller->cambiarEstado();
-        } else {
-            $controller->index();
-        }
-        break;
-
-    /* ===================== ASIGNACIONES ===================== */
-    case 'asignaciones':
-        require_once '../app/controllers/AsignacionesController.php';
-        $controller = new AsignacionesController();
-
         if ($a) {
             switch ($a) {
-
-                case 'individual':
-                    $controller->individual();
-                    break;
-
-                case 'guardarIndividual':
-                    $controller->guardarIndividual();
-                    break;
-
-                case 'guardarGrupo':
-                    $controller->guardarGrupo();
-                    break;
-
-                default:
-                    $controller->index();
-                    break;
+                case 'nuevo':          $controller->nuevo(); break;
+                case 'editar':         $controller->editar(); break;
+                case 'guardar':        $controller->guardar(); break;
+                case 'cambiarEstado':  $controller->cambiarEstado(); break;
+                default:               $controller->index(); break;
             }
         } else {
             $controller->index();
         }
         break;
 
+    case 'asignaciones':
+        require_once '../app/controllers/AsignacionesController.php';
+        $controller = new AsignacionesController();
+        $a = $_GET['a'] ?? 'index';
 
-        case 'docentes':
-    require_once '../app/controllers/DocentesController.php';
-    $controller = new DocentesController();
+        switch ($a) {
+            case 'individual':        $controller->individual(); break;
+            case 'grupal':            $controller->grupal(); break; 
+            case 'guardarIndividual': $controller->guardarIndividual(); break;
+            case 'guardarGrupo':      $controller->guardarGrupo(); break; 
+            default:                  $controller->index(); break;
+        }
+        break;
 
-    $accion = $_GET['a'] ?? 'alumnos';
+   case 'docentes':
+        require_once '../app/controllers/DocentesController.php';
+        $controller = new DocentesController();
+        
+        // Obtenemos la acción (a), si no hay, por defecto es dashboard
+        $accion = $_GET['a'] ?? 'dashboard';
 
-    switch ($accion) {
-
-        case 'misAlumnos':
-            $controller->misAlumnos();
-            break;
-
-        case 'exportar':
-            $controller->exportar();
-            break;
-
-        case 'alumnos':
-        default:
-            $controller->alumnos();
-            break;
-    }
-
-    break;
-
+        // Verificamos si el método existe en el controlador
+        if (method_exists($controller, $accion)) {
+            $controller->$accion(); // Ejecuta misAlumnos(), exportar(), etc.
+        } else {
+            // Si la acción no existe, nos manda al dashboard por seguridad
+            $controller->dashboard();
+        }
+        break;
     case 'expedientes':
-    require_once '../app/controllers/ExpedientesController.php';
-    (new ExpedientesController())->index();
-    break;
-
+        require_once '../app/controllers/ExpedientesController.php';
+        (new ExpedientesController())->index();
+        break;
 
     case 'bitacora':
-    require_once '../app/controllers/BitacoraController.php';
-    (new BitacoraController())->index();
-    break;
+        require_once '../app/controllers/BitacoraController.php';
+        (new BitacoraController())->index();
+        break;
 
-
-
-
-
-    /* ===================== LOGIN POR DEFECTO ===================== */
     case 'login':
     default:
         require_once '../app/controllers/AuthController.php';

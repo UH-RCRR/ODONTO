@@ -67,4 +67,37 @@ class Expediente {
             $data['observaciones']
         ]);
     }
+
+    /**
+     * LISTAR TODO (Para Administradores)
+     * Obtiene todos los expedientes de la tabla con el nombre del alumno
+     */
+    public function listarTodo() {
+        try {
+            // Unimos con la tabla usuarios si necesitas el nombre real del alumno desde ahí, 
+            // o usamos los campos de la tabla expedientes directamente.
+            $sql = "SELECT * FROM expedientes ORDER BY fecha_apertura DESC";
+            $stmt = $this->db->prepare($sql);
+            $stmt->execute();
+            return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        } catch (PDOException $e) {
+            return [];
+        }
+    }
+
+    /**
+     * OBTENER REPORTE DETALLADO
+     * Para visualizar el estado de salud y consultas en los reportes
+     */
+    public function obtenerReporteGlobal() {
+        $sql = "SELECT e.*, 
+                COUNT(c.id) as total_consultas
+                FROM expedientes e
+                LEFT JOIN consultas_clinicas c ON e.id = c.expediente_id
+                GROUP BY e.id
+                ORDER BY e.fecha_apertura DESC";
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
 }

@@ -130,9 +130,9 @@
     <div class="container py-5">
 
         <div class="d-flex justify-content-between align-items-center mb-5">
-            <a href="index.php?c=admin" class="btn-back-main shadow-sm">
+            <a href="index.php?c=subadmin&a=dashboard" class="btn-back-main shadow-sm">
                 <i class="fas fa-chevron-left"></i>
-                PANEL PRINCIPAL
+                REGRESAR AL PANEL
             </a>
             <div class="text-end">
                 <h2 class="fw-bold mb-0" style="color: var(--primary-dark)">Gestión de Clínicas</h2>
@@ -148,8 +148,8 @@
                 </div>
                 <div class="col-lg-6">
                     <form id="searchForm" class="d-flex gap-2" method="GET" action="index.php">
-                        <input type="hidden" name="c" value="asignaciones">
-                        <input type="hidden" name="a" value="individual">
+                        <input type="hidden" name="c" value="subadmin">
+                        <input type="hidden" name="a" value="vincular">
                         <input type="text" name="buscar" class="form-control form-control-dental"
                             placeholder="Ej: 2024001..." value="<?= htmlspecialchars($_GET['buscar'] ?? '') ?>"
                             required>

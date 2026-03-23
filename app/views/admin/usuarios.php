@@ -1,217 +1,145 @@
+<?php
+if (session_status() === PHP_SESSION_NONE) { session_start(); }
+$url_base = "index.php?c="; // Usamos ruta relativa para evitar conflictos
+?>
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Usuarios | Dental UH</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700&display=swap" rel="stylesheet">
-    
+
     <style>
-        :root {
-            --primary-dark: #001f3f;
-            --dental-blue: #0ea5e9;
-            --dental-light: #e0f2fe;
-            --bg-body: #f1f5f9;
-        }
+    :root {
+        --sb-accent: #0284c7;
+        --primary-dark: #0f172a;
+    }
 
-        body {
-            background-color: var(--bg-body);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
+    body {
+        background-color: #f1f5f9;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+    }
 
-        /* Botón Volver */
-        .btn-back-main {
-            background: white;
-            color: var(--primary-dark);
-            border: 2px solid var(--primary-dark);
-            border-radius: 12px;
-            padding: 10px 20px;
-            font-weight: 700;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-        }
+    .main-content-sigouh {
+        margin-left: 280px;
+        padding: 40px;
+    }
 
-        .btn-back-main:hover {
-            background: var(--primary-dark);
-            color: white;
-            transform: translateX(-5px);
-        }
+    .table-card {
+        background: white;
+        border-radius: 20px;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+        overflow: hidden;
+    }
 
-        /* Título y Badge */
-        .dental-badge {
-            background: var(--dental-light);
-            color: var(--dental-blue);
-            font-size: 0.7rem;
-            font-weight: 800;
-            text-transform: uppercase;
-            padding: 5px 12px;
-            border-radius: 20px;
-        }
+    .btn-nuevo {
+        background: linear-gradient(135deg, var(--primary-dark), var(--sb-accent));
+        color: white;
+        border: none;
+        border-radius: 12px;
+        padding: 10px 24px;
+        font-weight: 700;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
 
-        /* Tarjeta de Tabla */
-        .table-card {
-            background: white;
-            border-radius: 24px;
-            overflow: hidden;
-            border: none;
-            box-shadow: 0 10px 25px rgba(0, 0, 31, 0.05);
-            margin-top: 20px;
-        }
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 20px;
+        font-weight: 700;
+        font-size: 0.75rem;
+    }
 
-        .table thead {
-            background-color: #f8fafc;
-        }
-
-        .table thead th {
-            color: var(--primary-dark);
-            font-weight: 700;
-            text-transform: uppercase;
-            font-size: 0.75rem;
-            letter-spacing: 0.5px;
+    @media (max-width: 992px) {
+        .main-content-sigouh {
+            margin-left: 0;
             padding: 20px;
-            border: none;
         }
-
-        .table tbody td {
-            padding: 18px 20px;
-            vertical-align: middle;
-            color: #475569;
-            border-color: #f1f5f9;
-        }
-
-        /* Badges de Estado Custom */
-        .status-badge {
-            font-size: 0.75rem;
-            font-weight: 700;
-            padding: 6px 12px;
-            border-radius: 10px;
-        }
-
-        /* Botones de acción */
-        .btn-action {
-            border-radius: 10px;
-            font-weight: 600;
-            padding: 8px 16px;
-            transition: all 0.3s ease;
-            border: none;
-        }
-
-        .btn-activate {
-            background-color: #22c55e;
-            color: white;
-        }
-
-        .btn-activate:hover {
-            background-color: #16a34a;
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .btn-deactivate {
-            background-color: #ef4444;
-            color: white;
-        }
-
-        .btn-deactivate:hover {
-            background-color: #dc2626;
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .user-icon {
-            width: 35px;
-            height: 35px;
-            background: var(--dental-light);
-            color: var(--dental-blue);
-            border-radius: 10px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 10px;
-        }
+    }
     </style>
 </head>
+
 <body>
 
-<div class="container py-5">
-    
-    <div class="d-flex justify-content-between align-items-center mb-5">
-        <a href="index.php?c=admin" class="btn-back-main shadow-sm">
-            <i class="fas fa-chevron-left"></i> 
-            PANEL PRINCIPAL
-        </a>
-        <div class="text-end">
-            <h2 class="fw-bold mb-0" style="color: var(--primary-dark)">Gestión de Usuarios</h2>
-            <span class="dental-badge"><i class="fas fa-users-cog me-1"></i> Control de Acceso</span>
-        </div>
-    </div>
+    <?php include_once dirname(__DIR__) . '/layouts/sidebar.php'; ?>
 
-    <div class="table-card shadow-sm">
-        <div class="table-responsive">
-            <table class="table mb-0 table-hover">
-                <thead>
-                    <tr>
-                        <th>Usuario / Correo</th>
-                        <th>Rol del Sistema</th>
-                        <th>Estado Actual</th>
-                        <th width="180" class="text-center">Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php foreach ($usuarios as $u): ?>
+    <div class="main-content-sigouh">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <div>
+                <h2 class="fw-800 mb-0" style="font-weight: 800; color: var(--primary-dark);">Usuarios</h2>
+                <p class="text-muted mb-0">Administración de personal y accesos</p>
+            </div>
+
+            <a href="index.php?c=Usuarios&a=nuevo" class="btn-nuevo shadow-sm">
+                <span class="material-symbols-rounded">person_add</span>
+                NUEVO USUARIO
+            </a>
+        </div>
+
+        <div class="table-card">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead class="bg-light">
                         <tr>
-                            <td>
-                                <div class="d-flex align-items-center">
-                                    <div class="user-icon">
-                                        <i class="fas fa-envelope"></i>
-                                    </div>
-                                    <span class="fw-semibold text-dark"><?= htmlspecialchars($u['correo']) ?></span>
-                                </div>
+                            <th class="ps-4 py-3 border-0 text-muted small fw-bold">USUARIO</th>
+                            <th class="border-0 text-muted small fw-bold">ROL</th>
+                            <th class="border-0 text-muted small fw-bold">ESTADO</th>
+                            <th class="text-center border-0 text-muted small fw-bold">ACCIONES</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php foreach ($usuarios as $u): ?>
+                        <tr>
+                            <td class="ps-4">
+                                <div class="fw-bold text-dark"><?= htmlspecialchars($u['correo']) ?></div>
                             </td>
                             <td>
-                                <span class="text-muted"><i class="fas fa-user-shield me-1"></i> <?= htmlspecialchars($u['rol']) ?></span>
+                                <span class="badge border text-secondary px-2"><?= htmlspecialchars($u['rol']) ?></span>
                             </td>
                             <td>
                                 <?php if ($u['activo']): ?>
-                                    <span class="status-badge bg-success bg-opacity-10 text-success">
-                                        <i class="fas fa-check-circle me-1"></i> Activo
-                                    </span>
+                                <span
+                                    class="status-badge bg-success bg-opacity-10 text-success border border-success-subtle">Activo</span>
                                 <?php else: ?>
-                                    <span class="status-badge bg-danger bg-opacity-10 text-danger">
-                                        <i class="fas fa-times-circle me-1"></i> Inactivo
-                                    </span>
+                                <span
+                                    class="status-badge bg-danger bg-opacity-10 text-danger border border-danger-subtle">Inactivo</span>
                                 <?php endif; ?>
                             </td>
                             <td class="text-center">
-                                <form method="POST" action="index.php?c=usuarios&a=cambiarEstado" class="d-inline">
-                                    <input type="hidden" name="id" value="<?= $u['id'] ?>">
-                                    <input type="hidden" name="estado" value="<?= $u['activo'] ? 0 : 1 ?>">
-                                    
-                                    <?php if ($u['activo']): ?>
-                                        <button type="submit" class="btn btn-action btn-deactivate btn-sm shadow-sm">
-                                            <i class="fas fa-user-slash me-1"></i> Desactivar
+                                <div class="d-flex justify-content-center gap-2">
+                                    <a href="index.php?c=Usuarios&a=editar&id=<?= $u['id'] ?>"
+                                        class="btn btn-sm btn-light rounded-circle" title="Editar">
+                                        <span class="material-symbols-rounded"
+                                            style="font-size: 20px; vertical-align: middle;">edit</span>
+                                    </a>
+
+                                    <form method="POST" action="index.php?c=Usuarios&a=cambiarEstado"
+                                        style="display:inline;">
+                                        <input type="hidden" name="id" value="<?= $u['id'] ?>">
+                                        <input type="hidden" name="estado" value="<?= $u['activo'] ? 0 : 1 ?>">
+                                        <button type="submit"
+                                            class="btn btn-sm <?= $u['activo'] ? 'btn-outline-danger' : 'btn-success' ?> rounded-pill px-3 fw-bold">
+                                            <?= $u['activo'] ? 'Inactivar' : 'Activar' ?>
                                         </button>
-                                    <?php else: ?>
-                                        <button type="submit" class="btn btn-action btn-activate btn-sm shadow-sm">
-                                            <i class="fas fa-user-plus me-1"></i> Activar
-                                        </button>
-                                    <?php endif; ?>
-                                </form>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
-                    <?php endforeach; ?>
-                </tbody>
-            </table>
+                        <?php endforeach; ?>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
+
 </html>
